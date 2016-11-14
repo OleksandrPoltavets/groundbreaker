@@ -1,0 +1,213 @@
+<%= form_tag(update_rights_manage_settings_acl2_account_role_path(@account_role),
+             :method => 'put', :class => 'form-signin') do %>
+  <div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-8">
+      <h2>Roles and Rights</h2>
+      <ol class="breadcrumb">
+        <li>
+          <a href="<%= manage_root_path %>"><%= t('labels.modules.home') %></a>
+        </li>
+        <li class="active">
+          <a href="<%= manage_settings_acl2_account_roles_path%>">Roles</a>
+        </li>
+        <li>
+          <%= @account_role.name %>
+        </li>
+        <li class="active">
+          <strong>Rights</strong>
+        </li>
+      </ol>
+    </div>
+    <div class="col-lg-4">
+      <div class="title-action">
+        <a class="btn btn-default" onclick="$('input:checkbox').iCheck('uncheck');">Deselect
+          All</a>
+        <a class="btn btn-default" onclick="$('input:checkbox').iCheck('check');">Select All</a>
+        <%= submit_tag "Save", :class => "btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+  <div class='wrapper wrapper-content animated fadeInRight'>
+    <%= render :partial => "manage/layouts/notices" %>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+          <div class="ibox-title">
+            <h5>Deals</h5>
+          </div>
+          <div class="ibox-content">
+            <% Right.where(category: 'deals').each do |right| %>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <div class="checkbox i-checks">
+                      <label class="">
+                        <%= hidden_field_tag "right_ids[#{right.id}]", false %>
+                        <%= check_box_tag "right_ids[#{right.id}]", true,
+                                          @account_role.has_right?(right), class: "position: absolute; opacity: 0;" %>
+                        <i></i>
+                        <%= right.name.html_safe %>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <%end%>
+          </div>
+          <br>
+          <div class="ibox-title">
+            <h5>Blog Posts</h5>
+          </div>
+          <div class="ibox-content">
+            <% Right.where(category: 'articles').each do |right| %>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <div class="checkbox i-checks">
+                      <label class="">
+                        <%= hidden_field_tag "right_ids[#{right.id}]", false %>
+                        <%= check_box_tag "right_ids[#{right.id}]", true,
+                                          @account_role.has_right?(right), class: "position: absolute; opacity: 0;" %>
+                        <i></i>
+                        <%= right.name.html_safe %>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <%end%>
+          </div>
+          <br>
+          <div class="ibox-title">
+            <h5>Pages and Partials</h5>
+          </div>
+          <div class="ibox-content">
+            <% Right.where(category: 'pages').each do |right| %>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <div class="checkbox i-checks">
+                      <label class="">
+                        <%= hidden_field_tag "right_ids[#{right.id}]", false %>
+                        <%= check_box_tag "right_ids[#{right.id}]", true,
+                                          @account_role.has_right?(right), class: "position: absolute; opacity: 0;" %>
+                        <i></i>
+                        <%= right.name.html_safe %>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <%end%>
+          </div>
+          <br>
+          <% if current_account.tc('manage.forms.handles').present? %>
+            <% current_account.tc('manage.forms.handles').each do |handle| %>
+              <div class="ibox-title">
+                <h5><%= handle.to_s.humanize %></h5>
+              </div>
+              <div class="ibox-content">
+                <%
+                   right = Right.where(key: "view_#{handle}", category:
+                                                                "#{current_account.subdomain}_custom_forms").first_or_create
+                   right.name = "View #{handle}"
+                   right.actions = 'show index'
+                   right.save
+                %>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <div class="checkbox i-checks">
+                        <label class="">
+                          <%= hidden_field_tag "right_ids[#{right.id}]", false %>
+                          <%= check_box_tag "right_ids[#{right.id}]", true,
+                                            @account_role.has_right?(right), class: "position: absolute; opacity: 0;" %>
+                          <i></i>
+                          <%= right.name.html_safe %>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <%
+                   right = Right.where(key: "manage_#{handle}", category:
+                                                                  "#{current_account.subdomain}_custom_forms").first_or_create
+                   if current_account.tc("manage.forms.#{handle}_has_status").present?
+                     right.name = "Mark status, <b>manage #{handle}</b>"
+                   else
+                     right.name = "<b>Manage #{handle}</b>"
+                   end
+                   right.actions ||= 'show index mark_status delete'
+                   right.save
+                %>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <div class="checkbox i-checks">
+                        <label class="">
+                          <%= hidden_field_tag "right_ids[#{right.id}]", false %>
+                          <%= check_box_tag "right_ids[#{right.id}]", true,
+                                            @account_role.has_right?(right), class: "position: absolute; opacity: 0;" %>
+                          <i></i>
+                          <%= right.name.html_safe %>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br>
+            <% end %>
+          <% end %>
+          <div class="ibox-title">
+            <h5>Settings</h5>
+          </div>
+          <div class="ibox-content">
+            <% Right.where(category: 'settings').each do |right| %>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <div class="checkbox i-checks">
+                      <label class="">
+                        <%= hidden_field_tag "right_ids[#{right.id}]", false %>
+                        <%= check_box_tag "right_ids[#{right.id}]", true,
+                                          @account_role.has_right?(right), class: "position: absolute; opacity: 0;" %>
+                        <i></i>
+                        <%= right.name.html_safe %>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <%end%>
+          </div>
+
+          <!-- NEW CODE HERE -->
+          <div class="ibox-title">
+            <h5>External Admin Tools</h5>
+          </div>
+          <div class="ibox-content">
+            <% GbAdminRole::ROLES.each do |role| %>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <div class="checkbox i-checks">
+                      <label class="">
+                        <%= hidden_field_tag "gb_admin_roles[#{role}]", false %>
+                        <%= check_box_tag "gb_admin_roles[#{role}]", true,
+                                          has_role?(@account_role.account.owner_id, role), class: "position: absolute; opacity: 0;" %>
+                        <i></i>
+                        <%= role_name(role) %>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <%end%>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+<%end%>
