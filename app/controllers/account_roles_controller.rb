@@ -51,8 +51,6 @@ class Manage::Settings::Acl2::AccountRolesController < Manage::SettingsControlle
     redirect_to manage_settings_acl2_account_roles_path
   end
 
-
-
   def users
     @account_role = current_account.account_roles.find params[:id]
   end
